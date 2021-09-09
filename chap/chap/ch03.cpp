@@ -56,8 +56,8 @@ void ex01(void)
 	std::cin.getline(name2, size);
 
 	int size = 0;
-	char list[20] = {'ㄴ'};
-	char list2[20] = {'ㄴ'};
+	char list[20] = { 'ㄴ' };
+	char list2[20] = { 'ㄴ' };
 	// get() 함수는 여러 변종이 있다.
 	// 1. getline() 처럼 동작한다. 매개변수를 같은 방식으로 해석하며, 행의 끝까지 읽는다.
 	// 그러나 개행 문자를 읽어서 버리지 않고 입력 큐에 그대로 남겨둔다.
@@ -115,7 +115,7 @@ void ex02(void)
 
 	std::string list_data = { "Hello, world" };
 	std::string list_data2 = "Hello, mmm";
-	char test[30] = {0};
+	char test[30] = { 0 };
 	char test2[30] = { 0 };
 
 	list_data = list_data2; // 대입 가능
@@ -141,12 +141,83 @@ void ex02(void)
 
 void ex03(void)
 {
+	// 구조체는 사용자가 정의할 수 있는 데이터형이다.
+	// C++ 에서는 구조체를 매개변수, 리턴값으로 받을 수 있으며 대입 연산자 (=)를
+	// 사용하여 한 구조체의 멤버 값들이 상대방 구조체의 해당 멤버에 각각 대입된다.
+	struct ex04struct
+	{
+		char name[20];
+		double price;
+		std::string wow[30]; // 컴파일러마다 다르지만 요즘 컴파일러는 구조체 멤버로 string을 지원한다.
+	} NOTHIS =
+	{
+		"Lee",
+		2.1,
+		"Kim"
+	}; // 이렇게 구조체 선언과 동시에 구조체 변수 초기화도 가능하나
+	// 템플릿의 정의와 구조체 변수의 선언을 분리해 놓는 것이 프로그램을 더 이해하기 쉽게 만든다.
+
+	// C언어에서 구조체 변수를 선언할 때 키워드 struct를 요구한다.
+	// C++ 에서는 키워드 struct를 생략할 수 있다.
+
+	struct ex04struct test1; // C 스타일
+	ex04struct test2; // C++ 스타일
+	test2.price = 1.234;
+
+	//	C++11의 구조체 초기화
+	ex04struct test3{ "LEEKIM", 12.345, "Hello" }; // C++ 에서는 =을 생략할 수 있음
+	// {}를 공백으로 하면 각각의 멤버들을 0으로 초기화 한다.
+	test2 = test3; // 대입
+
+	// 원소가 구조체인 배열
+	ex04struct test4[2] =
+	{
+		{"PARK", 3.14, "KIM"},
+		{"PARK", 3.14, "KIM"}
+	};
+
+	// 구조체안의 비트 필드
+	// 저수준 프로그래밍에서 주로 사용된다.
+	struct torgle_register
+	{
+		unsigned int SN : 4; // SN 값 (4비트)
+		unsigned int : 4; // 사용하지 않음(4비트)
+		bool goodIn : 1; // 유효한 입력 (1비트)
+		bool goodTorgle : 1; // 토글에 성공 (1비트)
+	};
+
 
 }
 
 void ex04(void)
 {
+	// 공용체는 서로 다른 데이터형을 한 번에 한 가지만 보관할 수 있는 데이터 형식이다.
+	// 공용체의 크기는 멤버 변수들의 타입중 가장 큰 데이터형으로 만들어짐
+	// 예를들어 8바이트짜리 공용체를 만들었을때 int형은 4바이트로 8바이트 안에 포함이어서
+	// int 형 쓰다가 double 형으로 쓰면 int형은 사용불가
+	union one4all
+	{
+		int int_val;
+		double double_val;
+	};
 
+	one4all pail;
+	pail.int_val = 15; // int 형을 저장
+	std::cout << pail.int_val << std::endl;
+	pail.double_val = 1.37; // double 형을 저장, int 형 소실
+	std::cout << pail.double_val << std::endl;
+
+	// 열거체
+	// C++의 enum 기능은 const를 사용하여 기호 상수를 만드는것에 대한 또 다른 방편을 제공한다.
+	enum spectrum { red, blue, yellow }; // 열거체
+	spectrum band; // band는 spectrum형의 변수
+
+	band = red; // red는 열거자라서 가능
+	// band = 3000; 3000은 열거자가 아니라서 불가능
+	// band = red + blue; 그럴듯하지만 틀리다.
+	enum spectrum2 { red, blue = 2, yellow }; // 값을 명시적으로 지정할 수 있다, 일부만 지정할수도 있다.
+	// 대입되는 값들은 정수.
+	// red는 0이고 초기화되지 않은 열거자들은 바로 앞의 열거자보다 1만큼 크다. 노랑은 3
 }
 
 void ex05(void)

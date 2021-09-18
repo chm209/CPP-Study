@@ -51,5 +51,8 @@
     <ClCompile Include="ch07-연습문제.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ch08.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

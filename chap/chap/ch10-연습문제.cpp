@@ -82,7 +82,7 @@ Time operator*(double mult, const Time& t)
 	result.hours = totalminutes / 60;
 	result.minutes = totalminutes % 60;
 	return result;
-}
+}	
 
 std::ostream& operator<<(std::ostream& os, const Time& t)
 {

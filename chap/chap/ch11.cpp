@@ -14,6 +14,31 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const StringBad& st);
 };
 
+class String
+{
+private:
+	char* str;
+	int len;
+	static int num_strings;
+	static const int CINLIM = 80;
+public:
+	String(const char* s);
+	String();
+	String(const String& st);
+	~String();
+	int length() const { return len; }
+	String& operator=(const String& st);
+	String& operator=(const char* s);
+	char & operator[] (int i);
+	const char& operator[] (int i) const;
+	friend bool operator<(const String& st1, const String& st2);
+	friend bool operator>(const String& st1, const String& st2);
+	friend bool operator==(const String& st1, const String& st2);
+	friend std::ostream & operator<<(std::ostream & os, const String & st);
+	friend std::istream& operator>>(std::istream& is, String& st);
+	static int HomMany();
+};
+
 int StringBad::num_strings = 0;
 // static 멤버 변수는 클래스 선언 안에서 초기화할 수 없다.
 // static 멤버 변수는 class 밖에서 독립적으로 초기화한다.
@@ -52,6 +77,109 @@ std::ostream& operator<<(std::ostream& os, const StringBad& st)
 	return os;
 }
 
+int String::num_strings = 0;
+
+int String::HomMany()
+{
+	return num_strings;
+}
+
+String::String(const char* s)
+{
+	len = std::strlen(s);
+	str = new char[len + 1];
+	std::strcpy(str, s);
+	num_strings++;
+}
+
+String::String()
+{
+	len = 4;
+	str = new char[1];
+	str[0] = '\0';
+	num_strings++;
+}
+
+String::String(const String& st)
+{
+	num_strings++;
+	len = st.len;
+	str = new char[len + 1];
+	std::strcpy(str, st.str);
+}
+
+String::~String()
+{
+	--num_strings;
+	delete[] str;
+}
+
+String& String::operator=(const String& st)
+{
+	if (this == &st)
+		return *this;
+	delete[] str;
+	len = st.len;
+	str = new char[len + 1];
+	std::strcpy(str, st.str);
+	return *this;
+}
+
+String& String::operator=(const char* s)
+{
+	delete[] str;
+	len = std::strlen(s);
+	str = new char[len + 1];
+	std::strcpy(str, s);
+	return *this;
+}
+
+char& String::operator[](int i)
+{
+	return str[i];
+}
+
+const char& String::operator[](int i) const
+{
+	return str[i];
+}
+
+bool operator<(const String& st1, const String& st2)
+{
+	return (std::strcmp(st1.str, st2.str) < 0);
+}
+
+bool operator > (const String& st1, const String st2)
+{
+	return st2 < st1;
+}
+
+bool operator==(const String& st1, const String& st2)
+{
+	return (std::strcmp(st1.str, st2.str) == 0);
+}
+
+std::ostream& operator<<(std::ostream& os, const String& st)
+{
+	os << st.str;
+	return os;
+}
+
+std::istream& operator>>(std::istream& is, String& st)
+{
+	char temp[String::CINLIM];
+	is.get(temp, String::CINLIM);
+	if (is)
+	{
+		st = temp;
+	}
+	while (is && is.get() != '\n')
+	{
+		continue;
+	}
+	return is;
+}
+
 int main(void)
 {
 	// ◆ 클래스와 동적 메모리 대입
@@ -80,14 +208,77 @@ int main(void)
 	* 1. move 생성자
 	* 2. move 대입 연산자
 	* 
+	* ↓ 디폴트 생성자
+	* 1. 사용자가 어떠한 생성자도 제공하지 않으면, C++가 디폴트 생성자를 제공한다.
+	* 2. 매개변수도 사용하지 않고 아무 일도 하지 않는 생성자를 제공한다.
+	* 3. 디폴트 생성자는 객체를 보통의 자동 변수처럼 만든다.
+	* 4. 명시적으로 초기화하지 않는 객체를 만들고 싶거나, 객체들의 배열을 만들고 싶다면, 디폴트 생성자를 명시적으로 정의해야 한다.
+	* 5. 디폴트 생성자는 매개변수를 사용하지 않는 생성자이다.
+	* 6. 매개변수를 사용하는 생성자들도, 모든 매개변수들에 디폴트 값을 제공한다면, 디폴트 생성자가 될 수 있다.
+	*	그러나 ex2, ex3번을 동시에 사용할 수 없다. ex3이 모호한 생성자로 만들어지기 때문이다.
 	* 
+	* ex)
+	* 1. Test::Test() {} // 암시적 디폴트 생성자
+	* 2. Test::Test() { ．．． } // 명시적 디폴트 생성자
+	* 3. Test::Test(int n = 0) { test_var = n; } // 6번 예시
 	* 
+	* 6번의 이유
+	* {
+	*		Test t1(10); // Test::Test(int n = 0)에 명확하게 부합
+	*		Test t2; // 두 생성자에 모두 부합될 수 있다.
+	* }
 	* 
+	* ↓ 복사 생성자
+	* 1. 어떤 객체를 새로 생성되는 객체에 복사하는 데 사용된다.
+	* 2. 복사 생성자는 일반적인 대입에 사용되는 것이 아니라 값 전달에 의한 함수 매개변수 전달을 포함한 초기화 작업에 사용된다.
+	* 3. 클래스의 복사 생성자는 일반적으로 ex1과 같은 원형을 가진다.
+	* 4. 새로운 객체가 생성되어 같은 종류의 기존의 객체로 초기화될 때 마다 호출된다.
+	* 4-1. 가장 명백한 상황은 새로운 객체를 기존의 객체로 명시적으로 초기화할 때이다. (ex3 ~ ex6 확인)
+	* 4-2. 덜 명백하지만, 프로그램이 객체의 복사본을 생성할 때마다 컴파일러는 복사 생성자를 사용한다.
+	*	특히, 함수가 객체를 값으로 전달하거나, 함수가 객체를 리턴할 때 복사 생성자가 사용된다.
+	* 5. 객체를 값으로 전달하면 복사 생성자가 호출되기 때문에 참조로 전달하는것이 더 좋다.
+	* 6. 참조로 전달하면 생성자를 호출하는 시간과, 새로운 객체를 저장하는 메모리 공간이 절약된다.
+	* 7. 디폴트 복사 생성자는 static 멤버를 제외한 멤버들을 멤버별로 복사한다. ( 멤버별 복사 또는 얕은 복사라고 부른다)
 	* 
+	* ex)
+	* 1. Class_name (const Class_name &);
+	* 2. StringBad(const StringBad &);
+	* 3. StringBad ditto(motto); // StringBad(const StringBad &)을 호출한다.
+	* 4. StringBad metoo = motto; // StringBad(const StringBad &)을 호출한다.
+	* 5. StringBad also = StringBad(motto); // StringBad(const StringBad &)을 호출한다.
+	* 6. StringBad* pStringBad = new StringBad(motto); // StringBad(const StringBad &)을 호출한다.
 	* 
+	* ● 기타 StringBad의 문제점: 대입 연산자
+	* 1. C++도 클래스 객체 대입을 허용한다.
+	* 2. 어떤 클래스에 대해 대입 연산자를 자동으로 오버로딩함으로써 그것을 허용한다.
 	* 
-	* 
+	* ex)
+	* 1. Class_name & Class_name::operator=(const Class_name &);
+	* 2. StringBad & StringBad::operator=(const StringBad &);
 	*/
+
+	// 새롭게 개선된 string 클래스
+	// → StringBad 클래스를 수정하여 String 클래스를 만든다. 
+	// → 복사 생성자와 대입 연산자를 클래스에 추가하여, 클래스 객체들이 사용하는 메모리를 바르게 관리하도록 조치한다.
+	// → 클래스에 몇가지 기능을 추가한다.
+
+	/*
+	* static 클래스 멤버 함수
+	* 1. static 멤버 함수는 객체에 의해 호출될 필요가 없다.
+	* 2. static 멤버 함수는 this 포인터도 갖지 않는다.
+	* 3. static 멤버 함수가 public 부분에 선언되면, 그 함수는 클래스 이름과 사용 범위 결정 연산자를 사용하여 호출된다.
+	* 4. static 멤버 함수는 어떤 특정 객체와도 결합하지 않기 때문에, 사용할 수 있는 데이터 멤버는 static 데이터 멤버밖에 없다.
+	*/
+
+	// 생성자에 new를 사용할 때 주의할 사항
+	// 1. 생성자에서 new를 사용하여 포인터 멤버를 초기화한다면, 소멸자에 반드시 delete를 사용해야 한다.
+	// 2. new와 delete의 사용은 서로 어울려야 한다. new는 delete와 짝을 이루고, new[]는 delete[]와 짝을 이루어야 한다.
+	// 3. 생성자가 여러 개일 경우에는, 모두 대괄호를 사용하든지 아니면 모두 대광호 없이 사용하든지, 모든 생성자가 그 소멸자와 어율려야 한다.
+	//	 그러나 하나의 생성자에서 new를 사용하여 포인터를 초기화하고, 다른 생성자에서 널 포인터로 초기화하는 것은 허용된다.
+	// 4. 깊은 복사를 통해 하나의 객체를 다른 객체로 초기화하는, 복사 생성자를 정의해야 한다.
+	// 5. 깊은 복사를 통해 하나의 객체를 다른 객체에 대입하는, 대입 연산자를 정의해야 한다.
+	//
+	//
 
 	return 0;
 }

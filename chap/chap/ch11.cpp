@@ -307,7 +307,70 @@ int main(void)
 	* 1. net = force1 + force2; // 원래 의도한 사용방법
 	* 2. force1 + force2 = net // 난독 프로그래밍
 	* 3. cout << (force1 + force2 = net).magval() << endl; // 미친 프로그래밍
+	*/
+
+	// 객체를 지시하는 포인터
+
+	/*
+	* ● new에 의한 객체 초기화
+	* Class_name* pclass = new Class_name(value);
+	* 이 구문은 Class_name(Type_name); 같은 생성자를 호출한다.
+	* class_name(const Type_name &); 같은 변화를 줄 수도 있다.
+	* Class_name* ptr = new Class_name; 같은 형식의 초기화는 디폴트 생성자를 호출한다.
 	* 
+	* String* favorite = new String(sayings[choice];
+	* 여기서 favorite 포인터는 new에 의해 생성된 이름 없는 객체에 접근하는 유일한 통로를 제공한다.
+	* 
+	* ● new와 delete 복습
+	* 현재 챕터의 예제는 new와 delete를 두 가지 수준에서 사용한다.
+	* 1. 각 객체가 생성될 때마다 new를 사용하여 이름 문자열을 저장하기 위한 메모리 공간을 대입한다.
+	* 2. ex1과 같이 new를 사용하여 하나의 완전객체를 대입한다.
+	*	이것은 문자열을 저장하기 위한 것이 아니라 객체를 저장하기 위한 메모리 공간을 대입한다.
+	* 
+	* ex)
+	* 1. String* favorite = new String(sayings[choice]);
+	* 
+	* ↓ 소멸자는 다음과 같은 상황에서 호출된다.
+	* 1. 객체가 자동 변수이거나 external, static, static external, 또는 이름 공간 안에 있는 static 변수이면 소멸자는 프로그램이 종료될때 호출된다.
+	* 2. new에 의해 생성된 객체라면, 그 객체의 소멸자는 그 객체에 대해 명시적으로 delete를 사용할 때 호출된다.
+	* 
+	* ● 포인터와 객체에 대한 요약 - 846 페이지 확인
+	* ※ 객체를 지시하는 포인터를 사용할 때 몇 가지 사항을 알아 두어야 한다.
+	* 1. 객체를 지시한느 포인터는 일반적인 포인터 표기 형식을 사용하여 선언한다. ex1
+	* 2. 기존의 객체를 지시하도록 포인터를 초기화할 수 있다. ex2
+	* 3. new를 사용하여 포인터를 초기화할 수 있다. 이것은 새 객체를 생성한다. ex3
+	* 4. new를 클래스와 함께 사용하면, 새로 생성되는 객체를 초기화하기 위해 적절한 클래스 생성자가 호출된다. ex4 ~ ex6
+	* 5. 포인터를 사용하여 클래스 메서드에 접근하려면 -> 연산자를 사용한다. ex7
+	* 6. 객체를 얻기 위해 객체를 지시하는 포인터에 내용 참조 연산자(*)를 적용한다. ex8
+	* 
+	* ex)
+	* 1. String* test;
+	* 2. String* first = &sayings[0];
+	* 3. String* favorite = new string(sayings[choice]);
+	* 4. String* gleep = new String; // 디폴트 생성자를 호출한다.
+	* 5. String* glop = new String("la la la"); // String(const char*) 생성자를 호출한다.
+	* 6. String* favorite = new String(sayings[choice]); // String(const String &) 생성자를 호출한다.
+	* 7. if(sayings[i].length() < shortest->length())
+	* 8. if(sayings[i] < *first) // 객체 값들을 비교한다.
+	*		  first = &sayings[i]; // 객체 주소를 대입한다.
+	*    
+	* ● 위치 지정 new 다시 살펴보기
+	* ※ 847 페이지 코드가 예제
+	* 1. 예제 코드는 객체들을 위한 메모리를 대입하기 위해, 위치 지정 new를 정상적인 위치와 함께 사용한다.
+	* 2. 예제 코드의 위치 지정 new에는 두 가지 문제점이 있다.
+	* 3. 첫째, 두 번째 객체를 생성할 때 위치 지정 new는 첫 번째 객체에 사용된 것과 동일한 위치를 새로운 객체로 덮어쓴다.
+	*	   첫 번째 객체를 위한 소멸자가 결코 호출되지 않았다는 것을 의미한다. 그 클래스 멤버를 위해 동적 메모리 대입을 사용한다면 매우 큰 문제로 이어진다.
+	* 4. 둘재, pc2와 pc4에 delete를 사용하는 것은, pc2와 pc4가 지시하는 두 객체를 위한 소멸자를 자동으로 호출한다.
+	*	   그러나 buffer에 delete []를 사용하는 것은 위치 지정 new에 의해 생성된 객체들을 위한 소멸자를 호출하지 않는다.
+	* 5. 이 예제를 통해 배워야할 교훈은 위치 지정 new가 관할하는 버퍼에서 메모리 위치를 관리하는 것은 사용자 책임이다.
+	* 6. 서로 다른 두 위치를 사용하려면, 위치가 중복되지 않도록 주의하면서 그 버퍼 내에서 서로 다른 두 주소를 제공해야 한다.
+	* pc1 = new (buffer) JustTesting;
+	* pc2 = new (buffer + sizeof(JustTesting)) JustTesting("better", 6);
+	* 7. 위와 같이 사용하면 pc3는 pc1에서 JustTesting 객체의 크기만큼 떨어져있다.
+	* 8. 두번째 교훈은 위치 지정 new를 사용하여 객체를 저장하려면, 그들을 위한 소멸자가 호출되도록 조처할 필요가 있다는 것이다.
+	* 9. 이를 위한 해결법은 위치 지정 new에 의해 생성되는 객체들을 위한 소멸자를 명시적으로 호출하는 것이다.
+	* pc3->~JustTesting();
+	* pc1->~JustTesting();
 	*/
 
 	return 0;

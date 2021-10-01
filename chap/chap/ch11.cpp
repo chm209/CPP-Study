@@ -180,6 +180,119 @@ std::istream& operator>>(std::istream& is, String& st)
 	return is;
 }
 
+class Customer
+{
+private:
+	long arrive; // 고객이 큐에 도착한 시간
+	int processtime; // 고객이 거래를 처리하는 시간
+public:
+	Customer() { arrive = processtime = 0; }
+	void set(long when);
+	long when() const { return arrive; }
+	int ptime() const { return processtime; }
+};
+
+typedef Customer Item;
+
+class Queue
+{
+private:
+	struct Node { Item item; struct Node* next; };
+	enum {Q_SIZE = 10};
+	Node* front;
+	Node* rear;
+	int items;
+	const int qsize;
+	Queue(const Queue & q) : qsize(0) { }
+	Queue& operator=(const Queue& q) { return *this; }
+public:
+	Queue(int qs = Q_SIZE);
+	~Queue();
+	bool isempty() const;
+	bool isfull() const;
+	int queuecount() const;
+	bool enqueue(const Item& item);
+	bool dequeue(Item& item);
+};
+
+Queue::Queue(int qs) : qsize(qs)
+{
+	front = rear = NULL;
+	items = 0;
+}
+
+Queue::~Queue()
+{
+	Node* temp;
+	while(front != NULL)
+	{
+		temp = front;
+		front = front->next;
+		delete temp;
+	}
+}
+
+bool Queue::isempty() const
+{
+	return items == 0;
+}
+
+bool Queue::isfull() const
+{
+	return items == qsize;
+}
+
+int Queue::queuecount() const
+{
+	return items;
+}
+
+bool Queue::enqueue(const Item& item)
+{
+	if (isfull())
+	{
+		return false;
+	}
+	Node* add = new Node; // 노드 생성
+	add->item = item;
+	add->next = NULL;
+	items++;
+	if (front == NULL)
+	{
+		front = add;
+	}
+	else
+	{
+		rear->next = add;
+	}
+	rear = add;
+	return true;
+}
+
+bool Queue::dequeue(Item& item)
+{
+	if (front == NULL)
+	{
+		return false;
+	}
+	item = front->item;
+	items--;
+	Node* temp = front;
+	front = front->next;
+	delete temp;
+	if (items == 0)
+	{
+		rear = NULL;
+	}
+	return true;
+}
+
+void Customer::set(long when)
+{
+	processtime = std::rand() % 3 + 1;
+	arrive = when;
+}
+
 int main(void)
 {
 	// ◆ 클래스와 동적 메모리 대입
@@ -371,6 +484,95 @@ int main(void)
 	* 9. 이를 위한 해결법은 위치 지정 new에 의해 생성되는 객체들을 위한 소멸자를 명시적으로 호출하는 것이다.
 	* pc3->~JustTesting();
 	* pc1->~JustTesting();
+	*/
+
+	// 테크닉의 복습
+
+	/*
+	* ● << 연산자 오버로딩
+	* ostream & operator<<(ostream & os, const c_name & obj)
+	* {
+	*		os << ...;
+	*		return os;
+	* }
+	* 
+	* ● 변환 함수들
+	* 어떤 값을 클래스형으로 변환할때
+	* c_name(type_name value);
+	* 클래스형을 다른 데이터형으로 변환할때
+	* operator type_name();
+	* 이 함수에는 선언된 리턴형이 없지만, 원하는 데이터형의 값을 리턴해야 한다.
+	* 변환 함수는 조심해서 사용해야 한다. 암시적 변환이 이루어지지 않게 하려면 생성자를 선언할 때 키워드 expicit을 사용해야 한다.
+	* 
+	* ● 생성자가 new를 사용하는 클래스
+	* ※ 854 페이지 참고
+	*/
+
+	// 큐 시뮬레이션
+	// 예제 코드를 설명해서 옮기기 힘드니 책을 봐야함
+	// 855 페이지 ~
+	
+	/*
+	* ※ 큐는 항목들을 순서대로 보관하는 추상화 데이터형(ADT)이다.
+	* ※ 새로운 항목은 큐의 꼬리 부분에 추가된다.
+	* ※ 항목의 삭제는 큐의 머리 부분에서만 가능하다.
+	* ※ 큐는 스택과 많이 비슷하다.
+	* ※ 스택이 큐와 다른 점은 추가와 삭제가 동일한 한쪽 끝에서만 이루어진다는 것이다.
+	* ※ 그래서 스택은 LIFO, 큐는 FIFO 구조라고 한다.
+	* 
+	* ● Queue 클래스
+	* 1. 큐는 항목들을 도착한 순서대로 보관한다.
+	* 2. 큐는 보관할 수 있는 항목 수에 한계가 있다.
+	* 3. 비어 있는 큐를 생성할 수 있어야 한다.
+	* 4. 큐가 비어 있는지 검사할 수 있어야 한다.
+	* 5. 큐가 가득 차 있는지 검사할 수 있어야 한다.
+	* 6. 큐의 꼬리 부분에 항목을 추가할 수 있어야 한다.
+	* 7. 큐의 머리 부분에서 항목을 삭제할 수 있어야 한다.
+	* 8. 큐의 항목 수를 알 수 있어야 한다.
+	* 9. public 인터페이스와 private 세부 구현을 개발할 필요가 있다.
+	* 
+	* □ 단순 링크드 리스트
+	* 1. 각 노드가 그 다음 노드를 지시하는 하나의 링크(또는 포인터)만 가지고 있는 형태
+	* 2. 첫 번째 노드의 주소만 알면, 그 리스트에 연결된 각 노드들이 지시하는 포인터들을 계속 추적해 갈 수 있다.
+	* 3. 일반적으로 리스트의 마지막 노드에 있는 포인터는 연결된 노드가 더 이상 없다는 뜻으로 NULL로 설정된다.
+	* 
+	* □ 내포된 구조체와 클래스
+	* ※ 구조체, 클래스, 열거체가 어떤 클래스 안에서 선언되면, 그 클래스에 내포된다고 말하며 그 선언은 그 클래스의 사용 범위를 가진다.
+	* ※ 선언이 클래스의 private 부분에 있으면 선언된 그 데이터형은 그 클래스 안에서만 사용할 수 있다.
+	* ※ public 부분에 있으면 선언된 그 데이터형은 사용 범위 결정 연산자를 사용하여 그 클래스 바깥에서도 사용할 수 있다.
+	*   
+	* □ 멤버 초기자 리스트 (member initializer list)
+	* ※ const 데이터 멤버를 초기화하려면, 프로그램 제어가 생성자 몸체에 도달하기 전인, 객체가 생성될 때 초기화해야 한다.
+	* ※ 멤버 초기자 리스트는 앞에 콜론이 붙어 있고, 초기자들은 콤마로 분리해 놓은 리스트이다.
+	* ※ 멤버 초기자 리스트는 매개변수 리스트의 닫는 소괄호 뒤에 함수 몸체의 여는 중괄호 앞에 놓인다.
+	* Queue::Queue (int qs) : qsize(qs) // qsize를 qs로 초기화한다.
+	* {
+	*		front = rear = NULL;
+	*		items = 0;
+	* }
+	* ※ 이 테크닉은 상수들을 초기화시키는 것에만 제한되지 않는다. 아래처럼 작성 가능하다.
+	* Queue::Queue (int qs) : qsize(qs), front(NULL), rear(NULL), items(0) {}
+	* ※ 참조로 선언된 클래스 멤버들에 대해서도 이 문법을 사용해야 한다.
+	* 1. 이 형식은 생성자에만 사용할 수 있다.
+	* 2. C++11 이전에는 static이 아닌 const 데이터 멤버를 초기화하려면 이 형식을 사용해야 한다.
+	* 3. 참조 데이터 멤버를 초기화하려면 이 형식을 사용해야 한다.
+	* 
+	* □ 큐의 꼬리에 추가하는 메서드
+	* ※ 865 페이지 그림 보면 이해감
+	* 1. 큐 객체가 가득 차 있지 않은지 판단
+	* 2. 새 노드를 생성, 새로운 노드를 생성할 수 없는 경우는 나중에 배운다.
+	* 3. 값을 노드에 복사하고 next 포인터를 NULL로 설정
+	* 4.와 5. items 카운트를 갱신하고 노드를 큐의 꼬리에 붙이고 rear 포인터를 다시 설정
+	* 
+	* □ 큐의 머리에서 항목을 삭제하는 메서드
+	* ※ 867 페이지 그림 보면 이해감
+	* 1. 큐 객체가 비어 있지 않은지 판단.
+	* 2. 머리 노드에 있는 항목을 참조 변수에 복사
+	* 3.과 5. 노드를 큐의 머리에 붙이고 front 포인터를 다시 설정
+	* 4. front 노드의 주소를 임시 저장
+	* 6. 저장된 주소의 노드를 삭제
+	* 
+	* ※ 시뮬레이션 코드는 875페이지 부터 있음
 	*/
 
 	return 0;

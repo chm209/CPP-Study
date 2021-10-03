@@ -72,5 +72,8 @@
     <ClCompile Include="ch11-연습문제.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="chap12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

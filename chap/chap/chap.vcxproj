@@ -198,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="chap12.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tabtenn.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

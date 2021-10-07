@@ -1,5 +1,11 @@
 #include <iostream>
+#include "brass.h"
 #include "tabtenn.h"
+// 포맷팅 관련 (brass)
+typedef std::ios_base::fmtflags format;
+typedef std::streamsize precis;
+format setFormat();
+void restore(format f, precis p);
 
 TableTennisPlayer::TableTennisPlayer(const std::string& fn, const std::string& ln, bool ht)
 	: firstname(fn), lastname(ln), hasTable(ht) { }
@@ -18,6 +24,122 @@ RatedPlayer::RatedPlayer(unsigned int r, const std::string& fn, const std::strin
 RatedPlayer::RatedPlayer(unsigned int r, const TableTennisPlayer& tp) : TableTennisPlayer(tp), rating(r)
 { }
 
+// brass 메서드들
+Brass::Brass(const std::string& s, long an, double bal)
+{
+	fullName = s;
+	acctNum = an;
+	balance = bal;
+}
+
+void Brass::Deposit(double amt)
+{
+	if (amt < 0)
+	{
+		std::cout << "마이너스 입금 불가, 입금 취소\n";
+	}
+	else
+	{
+		balance += amt;
+	}
+}
+
+void Brass::Withdraw(double amt)
+{
+	format initialState = setFormat();
+	precis prec = std::cout.precision(2);
+	
+	if (amt < 0)
+	{
+		std::cout << "마이너스 인출 불가, 인출 취소\n";
+	}
+	else if (amt <= balance)
+	{
+		balance -= amt;
+	}
+	else
+	{
+		std::cout << "인출 요구 금액: " << amt
+			<< "가 현재 잔액을 초과함\n 인출 취소\n";
+	}
+}
+
+double Brass::Balance() const
+{
+	return balance;
+}
+
+void Brass::ViewAcct() const
+{
+	format initialState = setFormat();
+	precis prec = std::cout.precision(2);
+	std::cout << "고객 이름: " << fullName << std::endl
+		<< "계좌 번호: " << acctNum << std::endl
+		<< "현재 잔액: $" << balance << std::endl;
+	restore(initialState, prec); // 원래의 형삭울 복원
+}
+
+BrassPlus::BrassPlus(const std::string& s, long an, double bal, double ml, double r) : Brass(s, an, bal)
+{
+	maxLoan = ml;
+	owesBank = 0.0;
+	rate = r;
+}
+
+BrassPlus::BrassPlus(const Brass& ba, double ml, double r) : Brass(ba) // 암시적 복사 생성자를 사용
+{
+	maxLoan = ml;
+	owesBank = 0.0;
+	rate = r;
+}
+
+void BrassPlus::ViewAcct() const
+{
+	format initialState = setFormat();
+	precis prec = std::cout.precision(2);
+	Brass::ViewAcct();
+	std::cout << "당좌 대월 한도액: $" << maxLoan << std::endl
+		<< "상환할 원리금: $" << owesBank << std::endl;
+	std::cout.precision(3);
+	std::cout << "당좌 대월 이자율: " << 100 * rate << "%\n";
+	restore(initialState, prec);
+}
+
+void BrassPlus::Withdraw(double amt)
+{
+	format initialState = setFormat();
+	precis prec = 0.0;
+	double bal = Balance();
+	if (amt <= bal)
+	{
+		Brass::Withdraw(amt);
+	}
+	else if (amt <= bal + maxLoan - owesBank)
+	{
+		double advance = amt - bal;
+		owesBank += advance * (1.0 + rate);
+		std::cout << "당좌 대월 금액: $" << advance << std::endl
+			<< "당좌 대월 이자: $" << advance * rate << std::endl;
+		Deposit(advance);
+		Brass::Withdraw(amt);
+	}
+	else
+	{
+		std::cout << "당좌 대월 한도가 초과되어 거래가 취소 됩니다.\n";
+	}
+	restore(initialState, prec);
+}
+
+format setFormat()
+{
+	return std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
+}
+
+void restore(format f, precis p)
+{
+	std::cout.setf(f, std::ios_base::floatfield);
+	std::cout.precision(p);
+}
 
 void main(void)
 {
@@ -141,6 +263,36 @@ void main(void)
 	// has-a, is-implemented-as-a, uses-a 관계를 나타내기 위해 사용하는 것을 C++언어는 제한하지 않는다.
 	// 그러나 일반적으로 그렇게 하면 프로그래밍 문제가 발생한다.
 	// 그러므로 is-a 관계만 사용하도록 하자.
+
+	// public 다형 상속
+	// 호출하는 객체에 따라 메서드의 행동이 달라질 수 있기 때문에, 여러가지 형식을 가지고 있다는 의미에서 그러한 복잡한 행동을 다형이라 한다.
+
+	/*
+	* ↓ public 다형 상속을 구현하는 두 가지 중요한 방법
+	* 1. 기초 클래스 메서드를 파생 클레스에서 다시 정의한다.
+	* 2. 가상 메서드를 사용한다.
+	* 
+	* ※ 가상 메서드
+	* 1. virtual 이라는 키워드를 사용함
+	* 2. 클래스의 public 섹샨에 선언한다.
+	* 3. 가상 함수는 static일 수 없으며 다른 클래스의 friend 함수가 될 수도 없다.
+	* 4. 가상 함수는 실행시간 다형성을 얻기위해 기본 클래스의 포인터 또는 참조를 통해 접근 해야 한다.
+	* 5. 가상 함수의 프로토타입은 기본 클래스와 파생 클래스에서 동일하다.
+	* 6. 가상 소멸자는 있지만 가상 생성자는 없다.
+	* 
+	* ※ brass.h 참고사항
+	* 1. 기초 클래스, 파생 클래스 모두 ViewAcct(), Withdraw() 메서드를 선언하고 있다. 다만, 클래스마다 동작이 다르다.
+	* 2. Brass 클래스는 virtual 이라는 키워드를 사용하여 가상 메서드를 생성했다.
+	* 2-1. 각 클래스마다 ViewAcct 원형이 선언되었는데, 이것은 서로 독립된 두 개의 메서드 정의가 있다는 것을 알려준다.
+	* 3. virtual 키워드 사용은 메서드가 객체에 의해 호출되지 않고 참조나 포인터에 의해 호출되었을 때 어느 메서드를 사용할 것인지를 결정한다.
+	* 3-1. virtual 키워드를 사용했을 경우에, 프로그램은 참조나 포인터에 의해 지시되는 객체형에 기초하여 메서드를 선택한다.
+	* 
+	* ※ 가상 함수는 참조하는 객체의 클래스에 따라 메서드를 선택해준다.
+	* ※ 가상 함수들의 이런 행동은 여러모로 편리하다. 그러므로 파생 클래스에서 다시 정의되는 메서드들은, 기초 클래스에서 가상으로
+	* 선언하는 것이 일반적인 관행이다.
+	* ※  어떤 메서드가 기초 클래스에서 가상으로 선언되었을 때, 파생 클래스에서도 자동으로 가상 메서드가 된다.
+	* 파생 클래스에서도 virtual 키워드를 사용해서 어떤 함수들이 가상인지 표시하는것이 바람직하다.
+	*/
 
 	// 파생 클래스 사용하기 예제 (91라인)
 	{

@@ -199,6 +199,7 @@
     <ClCompile Include="chap12.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="brass.h" />
     <ClInclude Include="tabtenn.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

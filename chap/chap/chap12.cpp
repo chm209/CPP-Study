@@ -327,4 +327,23 @@ void main(void)
 		rp2.Name();
 		std::cout << " ·©Å·: " << rp2.Rating() << std::endl;
 	}
+
+	{
+		std::cout << "\n\n";
+		Brass Piggy("Porcelot Pigg", 381299, 4000.00);
+		BrassPlus Hoggy("Horatio Hogg", 382288, 3000.00);
+		Piggy.ViewAcct();
+		std::cout << std::endl;
+		Hoggy.ViewAcct();
+		std::cout << std::endl;
+		std::cout << "Hogg ¾¾ÀÇ °èÁÂ¿¡ $1000 ÀÔ±Ý:\n";
+		Hoggy.Deposit(1000.00);
+		std::cout << "Hogg ¾¾ÀÇ ÇöÀç ÀÜ¾×: $" << Hoggy.Balance() << std::endl;
+		std::cout << "Pigg ¾¾ÀÇ °èÁÂ¿¡¼­ $4200 ÀÎÃâ:\n";
+		Piggy.Withdraw(4200.00);
+		std::cout << "Pigg ¾¾ÀÇ ÇöÀç ÀÜ¾×: $" << Piggy.Balance() << std::endl;
+		std::cout << "Hogg ¾¾ÀÇ °èÁÂ¿¡¼­ $4200 ÀÎÃâ:\n";
+		Hoggy.Withdraw(4200.00);
+		Hoggy.ViewAcct();
+	}
 }

@@ -3,6 +3,7 @@
 #include "tabtenn.h"
 void ex01(void);
 void ex02(void);
+void ex03(void);
 // 포맷팅 관련 (brass)
 typedef std::ios_base::fmtflags format;
 typedef std::streamsize precis;
@@ -146,7 +147,8 @@ void restore(format f, precis p)
 void main(void)
 {
 	// ex01();
-	ex02();
+	// ex02();
+	ex03();
 }
 
 void ex01(void)
@@ -495,9 +497,20 @@ void ex02(void)
 	* 1-1. 예외가 있다면 리턴형이 기초 클래스에 대한 참조나 포인터인 경우에 파생 클래스에 대한 참조나 포인터로 대체될 수 있다.
 	* 리턴형이 클래스형과 병행하여 바뀌는 것을 허용하기 때문에 이 기능을 리턴형의 공변이라 한다.
 	* 2. 기초 클래스 선언이 오버로딩되어 있다면, 파생 클래스에서 모든 기초 클래스 버전들을 재정의해야 한다.
-	* 
-	* 
-	* 
 	*/
 
+}
+
+void ex03(void)
+{
+	// 접근 제어: protected
+	// ※ protected 부분에 있는 클래스 멤버에 접근하기 위해서는 public 클래스 멤버를 사용해야만 한다는 점에서, private와 비슷하다.
+	// ※ protected와 private의 차이는 기초 클래스로부터 파생된 클래스 안에서만 기능을 발휘한다.
+	// ※ 파생 클래스의 멤버들은 기초 클래스의 protected 멤버에는 직접 접근할 수 있지만, 기초 클래스의 private 멤버에는 직접 접근할 수 없다.
+	// ※ protected 데이터 멤버를 사요하는 것은, 코드 작성은 단순화시킬지 모르지만 설계상에 결점을 가지게 된다.
+	// 예를들어 BrassPlus 예제에서 balance가 protected로 선언되었다면 직접 접근할 수 있게 된다.
+	// Brass 클래스는 Deposit() 과 Withdraw() 인터페이스가 유일한 수단으로 설계되었지만 BrassPlus 입장에서는 balance가 본질적으로 public 변수이므로 Withdraw()에 마련된 안전장치가 무시된다.
+	// ※ 가능하다면 protected 접근 제어보다 private 접근 제어를 사용하여 클래스 데이터 멤버들에 접근해야 한다.
+	// ※ 그리고 파생 클래스가 기초 클래스 데이터에 접근하려면 기초 클래스 메서드를 사용해야 한다.
+	// ※ 그러나 public으로 사용할 수 없는 내부 함수에 파생 클래스가 접근할 수 있게 해주므로, protected 접근 제어가 멤버 함수에 아주 유용할 수도 있다.
 }

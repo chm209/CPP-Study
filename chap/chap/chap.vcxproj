@@ -202,10 +202,13 @@
     <ClCompile Include="chap12-연습문제2.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="chap12-연습문제3.cpp" />
+    <ClCompile Include="chap12-연습문제3.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="chap12.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="chap13.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brass.h" />

@@ -84,6 +84,9 @@
     <ClCompile Include="chap12-연습문제3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="chap13.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tabtenn.h">

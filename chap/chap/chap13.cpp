@@ -70,12 +70,45 @@ void ex01(void)
 	// 
 	//  EX) 두 개의 클래스로부터 상속받는 클래스 예제
 	// class Student : private std::string, private std::valarray<double>
-	// 
-	// ↓ 기초 클래스 객체에 접근하기
-	// Student 클래스의 컨테인먼트 버전은 name 멤버인 string 객체를 리턴하게 함으로써 Name() 메서드를 구현한다.
-	// private 상속에서는 데이터형 변환을 사용한다.
-	// Student가 string으로부터 상속되었기 때문에, student 객체를 string 객체로 데이터 변환을 할 수 있다.
-	// 예시)
-	// const string & Student::Name() const { return (const string &) *this;
-	//
+
+	/*
+	* ↓ 기초 클래스 객체에 접근하기
+	* Student 클래스의 컨테인먼트 버전은 name 멤버인 string 객체를 리턴하게 함으로써 Name() 메서드를 구현한다.
+	* private 상속에서는 데이터형 변환을 사용한다.
+	* Student가 string으로부터 상속되었기 때문에, student 객체를 string 객체로 데이터 변환을 할 수 있다.
+	* 예시)
+	* const string & Student::Name() const { return (const string &) *this;
+	* 
+	* ↓ 기초 클래스 프렌드에 접근하기
+	* ※ 클래스 이름을 사용하여 함수 이름을 명시적으로 지정하는 테그닉은, 프렌드 함수가 클래스에 속하지 않기 때문에 적용되지 않는다.
+	* ※ 기초 클래스로 변환하는 명시적인 데이터형 변환을 사용하여 정확한 함수를 호출할 수 있다.
+	* ※ private 상속에서 명시적인 데이터형 변환이 없으면 파생 클래스에 대한 참조나 포인터를 기초 클래스에 대한 참조나 포인터에 대입할 수 없기 때문이다.	
+	* 
+	* ● 컨테인먼트와 private 상속
+	* ※ 컨테이먼트와 private 상속 둘 중 어느 하나를 사용하여 has-a 관계를 모델링할 수 있다면, 어느 것을 사용해야 할까?
+	* 대부분의 개발자들은 컨테인먼트를 선호한다.
+	* 1. 컨테인먼트가 사용하기 쉽기 때문
+	* 2. 하나 이상의 기초 클래스로부터 클래스를 상속할 때, 상속이 문제를 일으킬 수 있기 때문
+	* 
+	* ※ 일반적으로 has-a 관계를 모델링하려면 컨테인먼트를 사용해야 한다. 새 클래스가 오리지널 클래스의 protected 멤버들에 접근할 필요가 있거나,
+	* 가상 함수들을 다시 정의할 필요가 있을 경우에는 private 상속을 사용해야 한다.
+	* 
+	* ● protected 상속
+	* ※ protected 상속은 private 상속의 변종이다.
+	* ※ protected 상속은 기초 클래스를 나열할 때 키워드 protected를 사용한다.
+	* ※ 기초 클래스의 public 멤버와 protected 멤버가 파생 클래스의 protected 멤버가 된다.
+	* ※ privtate 상속과 마찬가지로, 기초 클래스의 인터페이스를 파생 클래스에서 사용할 수 있지만, 바깥 세상에서는 사용할 수 없다.
+	* ※ private 상속과 protected 상속의 주된 차이점은, 파생 클래스로부터 또 다른 클래스를 파생시킬때 드러난다.
+	* 1020 페이지 특성 정리 표 있음
+	* 
+	* 예시)
+	* class Student : protected std::string, protected std::valarray<double> { ... };
+	* 
+	* ● using을 사용하여 접근 다시 정의하기
+	* 어떤 특정 기초 클래스의 메서드를 파생 클래스에서 public 으로 사용할 수 있게 하고 싶다고 가정
+	* 해결책 1. 기초 클래스 메서들르 사용하는 파생 클래스 메서드를 정의한다.
+	* 해결책 2. using 선언을 사용하여, 파생 클래스에서 사용할 특정 기초 클래스 멤버를 지정한다.
+	* 해결책 3. private으로 파생된 클래스에 기초 클래스 메서드들을 다시 선언 한다.
+	* (파생 클래스의 public 부분에 메서드 이름을 넣는 구식 방법) -> 사용하지 말고 using을 사용할것
+	*/
 }

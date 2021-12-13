@@ -99,7 +99,8 @@ void ex01(void)
 	* test = Test(19.6) // 명시적 데이터 변환으로 사용가능
 	* test = (Test) 19.6 // 명시적 데이터형 변환의 옜날 형식
 	* 
-	* ↓ 또한 delete 키워드를 붙여 특정 타입의 인수는 받지 않도록 막을 수 있다. 이때의 delete는 동적 할당 받은 메모리를 해제 시키는 delete와는 다르다.
+	* ↓ 또한 생성자에 delete 키워드를 붙여 특정 타입의 인수는 받지 않도록 막을 수 있다. 이때의 delete는 동적 할당 받은 메모리를 해제 시키는 delete와는 다르다.
+	* public:
 	*  Fraction(char) = delete;
 	*		explicit Fraction(int num = 0, int den = 1)
 	*		{

@@ -23,12 +23,12 @@ public:
     ~Student() {}
     double Average() const;
     const std::string & Name() const;
-    // double & operaetor[](int i);
+    double & operator[](int i);
     double operator[](int i) const;
     // 프렌드 함수
     friend std::istream & operator>>(std::istream & is, Student & stu);
     friend std::istream & getline(std::istream & is, Student & stu);
-    friend std::ostream & operator<<(std::ostream & os, Student & stu);
+    friend std::ostream & operator<<(std::ostream & os, const Student & stu);
 };
 
 #endif

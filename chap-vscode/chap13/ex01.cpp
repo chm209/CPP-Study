@@ -39,10 +39,10 @@ void set(Student & sa, int n)
     cout << n << "회에 걸친 시험 점수를 모두 입력하십시오:\n";
     for(int i = 0; i < n; i++)
     {
-        // cin >> sa[i];
+        cin >> sa[i];
     }
     while(cin.get() != '\n')
     {
         continue;
-    }
+    
 }

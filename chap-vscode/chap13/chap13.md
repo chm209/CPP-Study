@@ -90,7 +90,7 @@ double Student::Average() const
 { if(ArrayDb::size() > 0) ... }
 ``` 
 
-#### 컨테인먼트와 private 상속
+##### 컨테인먼트와 private 상속
 컨테인먼트와 private 상속 둘 중 어느 하나를 사용하여 has-a 관계를 모델링할 수 있다면, 어느 것을 사용해야 할까?
 
 대부분의 개발자들은 컨테인먼트를 선호한다.
@@ -103,3 +103,46 @@ double Student::Average() const
 그러나 private 상속은 컨티엔먼트가 제공하는 것 이상의 기능을 제공한다.
 
 private 상속을 사용해야 하는 다른 상황은, 가상 함수를 다시 정의할 필요가 있을 때이다.
+
+##### protected 상속
+
+protected 상속은 private 상속의 변종이다. protected 상속은 기초 클래스를 나열할 때 키워드 protected를 사용한다.
+
+protected 상속에서는 기초 클래스의 public 멤버와 protected 멤버가 파생 클래스의 protected 멤버가 된다.
+
+private 상속과 마찬가지로 기초 클래스의 인터페이스를 파생 클래스에서 사용할 수 있지만, 바깥 세계에서는 사용할 수 없다.
+
+``` c++
+class Student : protected std::string, protected std::valarray<double>
+{
+    ...
+};
+```
+
+protected 상속과 private 상속의 차이점은 파생 클래스로부터 또 다른 클래스를 파생시킬때 들어난다.
+
+##### using을 사용하여 접근 다시 정의하기
+
+protected 파생이나 private 파생을 사용할 때, 기초 클래스의 public 멤버들은 protected 멤버 또는 private 멤버가 된다.
+
+어떤 특정 기초 클래스 메서드를 파생 클래스에서 public으로 사용할 수 있게 하고 싶다고 가정하자.
+
+1. 기초 클래스 메서드를 사용하는 파생 클래스 메서드를 정의하는 방법
+``` cpp
+double Student::sum() const
+{
+    return std::valarray<double>::sum();
+    // private로 상속된 메서드
+}
+```
+2. 하나의 함수 호출을 다른 함수 안에 넣을 수 있는 방법. using 선언을 사용하여, 파생 클래스에서 사용할 특정 기초 클래스 멤버를 지정하는 것이다. 선언에서 작성할 수 있다. 
+``` cpp
+class Student : private std::string, private std::valarray<double>
+{
+    ...
+public:
+    using std::valarray<double>::min;
+    using std::valarray<double>::max;
+};
+```
+3. private으로 파생된 클래스에 기초 클래스 메서드들을 다시 선언하는 방법 (사용하지 말것 -> using을 사용하는 이유를 퇴색시킨다.)

@@ -8,14 +8,18 @@
 chap-vscode
     ㄴ chap13
         ㄴ chap13.md <- 내용정리
-        ㄴ ex01.cpp
-        ㄴ ex02.cpp
+		ㄴ ex01
+            ㄴ ex01.cpp
+        ㄴ ex02
+		    ㄴ ex02.cpp
         ㄴ chap13-problems.cpp
         ...
     ㄴ chap14
         ㄴ chap14.md <- 내용정리
-        ㄴ ex01.cpp
-        ㄴ ex02.cpp
+        ㄴ ex01
+            ㄴ ex01.cpp
+        ㄴ ex02
+		    ㄴ ex02.cpp
         ㄴ chap14-problems.cpp
     ...
 ```

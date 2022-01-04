@@ -2,6 +2,7 @@
 #define ARRAYTP_HPP_
 #include <iostream>
 #include <cstdlib>
+void twodee(void);
 
 template <typename T, int n>
 class ArrayTP
@@ -42,7 +43,7 @@ T ArrayTP<T, n>::operator[](int i) const
     if(i < 0 || i >= n)
     {
         std::cerr << "배열의 경계를 벗어나는 에러: "
-            i << "--> 잘못된 인덱스입니다.\n"
+            << i << "--> 잘못된 인덱스입니다.\n";
         std::exit(EXIT_FAILURE);
     }
     return ar[i];

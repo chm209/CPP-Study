@@ -393,7 +393,7 @@ Stack 클래스 템플릿의 마지막 버전이 사용한 테크닉은, 클래�
 3. 성분 클래스가 될 수도 있다.
 4. 그들 자신이 다른 템플릿들에 데이터형 매개변수가 될 수도 있다.
 
-#### 템플릿의 재귀적 사용
+### 템플릿의 재귀적 사용
 
 템플릿을 재귀적으로 사용할 수 있다는 것이, 템플릿의 융통성을 보여 주는 또 하나의 예이다.
 
@@ -406,3 +406,75 @@ Stack 클래스 템플릿의 마지막 버전이 사용한 테크닉은, 클래�
 템프릿을 사용하는 문법은 보통의 2차원 배열을 사용하는 문법과 차원을 나타내는 순서가 반대이다.
 
 예제코드 twodee.cpp로 확인해본다.
+
+### 하나 이상의 데이터형 매개변수 사용
+
+예를 들어, 두 종류의 값을 저장하는 클래스를 원한다고 가정하자.
+
+종류가 전혀 다른 두 값을 저장하기 위해 Pair 템플릿 클래스를 생성하여 사용할 수 있다.
+
+``` cpp
+template <typename T1, typename T2>
+class Pair
+{
+private:
+    T1 a;
+    T2 b;
+public:
+    T1 & first();
+    T2 & second();
+    T1 first() const { return a; }
+    T2 second() const { return b; }
+    Pair(const T1 & aval, const T2 & bval) : a(aval), b(bval) {}
+}
+
+template <typename T1, typename T2>
+T1 & Pair<T1, T2>::first()
+{
+    return a;
+}
+
+template <typename T1, typename T2>
+T2 & Pair<T1, T2>::second()
+{
+    return b;
+}
+
+int main()
+{
+    Pair<std::string, int> ratings[4] = 
+    {
+        Pair<std::string, int>("전지현", 5),
+        Pair<std::string, int>("전지현", 5),
+        Pair<std::string, int>("전지현", 5),
+        Pair<std::string, int>("전지현", 5)
+    };
+
+    int joints = sizeof(ratings) / sizeof(Pair<string, int>);
+    ...
+}
+```
+
+위 코드에서 주목할점은 main에서 Pair\<std::string, int>를 생성자를 호출하는 데 사용해야 하고 sizeof의 매개변수로 사용해야 한다는 것이다.
+
+그 이유는 클래스 이름이 Pair가 아니라 Pair\<std::string, int>이기 때문이다.
+
+또한 Pair\<char *>, double>은 완전히 다른 클래스 이름이 될 것이다.
+
+### 클래스 템플릿 디폴트 데이터형 매개변수
+
+데이터형 매개변수들에 디폴트 값을 제공할 수 있다.
+
+> template \<typename T1, typename T2 = int> class Topo { ... }
+
+이것은 컴파일러에게 T2를 위한 값이 생략되었을 때 T2에 해당하는 데이터형으로 int를 사용하라고 지시한다.
+
+Topo\<double, double> m1; // T1은 double, T2도 double
+
+Topo\<double> m2; // T1은 double, T2는 int
+
+표준 템플릿 라이브러리는, 클래스를 디폴트 데이터형으로 하여 이 기능을 자주 사용한다.
+
+클래스 템플릿 데이터형 매개변수에는 디폴트 값을 제공할 수 있지만, 함수 템플릿 매개변수에는 디폴트 값을 제공할 수 없다.
+
+그러나 클래스 템플릿과 함수 템플릿 두경우 모두, 데이터형이 아닌 매개변수에 대해서는 디폴트 값을 제공할 수 있다.

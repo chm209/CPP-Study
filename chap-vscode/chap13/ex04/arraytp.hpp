@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 void twodee(void);
+void tempmemb(void);
 
 template <typename T, int n>
 class ArrayTP

@@ -641,3 +641,140 @@ Trio<int, short, char *> t1; // 1번 템플릿 사용
 Trio<int, short> t2; // 2번 템플릿 사용
 Trio<char, char*, char*> t3 // 3번 템플릿 사용
 ```
+
+---
+
+``` 참고 ```
+
+1. 특수화를 하면 선언도 따로 해줘야한다.
+
+```cpp
+template<typename T>
+class A 
+{
+public:
+    A(const T& input)
+    {}
+
+    void doSomething()
+    {
+        cout << typeid(T).name() << endl;
+    }
+    
+    void test()
+    {}
+};
+
+
+template<>
+class A<char>
+{
+public:
+    A(const char& input)
+    {}
+
+    void doSomething()
+    {
+        cout << "Char type specialization" << endl;
+    }
+};
+
+int main()
+{
+    A<int> a_int(1);
+    A<double> a_double(3.14);
+    A<char> a_char('a');
+    
+    a_int.doSomething();
+    a_double.doSomething();
+    a_char.doSomething();
+    
+    a_char.test(); // ❌에러❌
+
+    return 0;
+}
+```
+
+2. 특수화한 타입으로 구체화 될 땐 test() 멤버 함수가 없는 것이나 마찬가지다.
+
+> 두번째 선언으로  구체화하기 때문
+
+> 생성자도 따로 정의 해줘야 한다.
+
+> > 그렇지 않으면 그냥 빈 내용의 디폴트 생성자를 컴파일러가 만들어 호출한다.
+
+> > 원래 생성자 정의가 없었다면 상관없지만 원래 클래스 템플릿에 생성자가 있다면 정의해줘야 한다.
+
+> C++17 부터는 생성자 매개변수로 들어가 인수로 T 타입을 알 수 있는 경우 <구체화타입>을 생력할 수 있다.
+
+``` cpp
+A a_int(1);   // 👉 int 로 구체화
+A a_double(3.14);  // 👉 double 로 구체화
+A a_char('a');   // 👉 char 로 구체화
+```
+
+### 멤버 템플릿
+
+템플릿은 구조체, 클래스, 템플릿 클래스의 멤버가 될 수 있다.
+
+``` tempmemb.cpp ``` 는 템플릿 클래스와 템플릿 함수를 멤버로 내포하고 있는, 템플릿 클래스의 짧은 예제이다.
+
+hold 템플릿은 private 부분에 선언되어 있다. 그러므로 그것은 beta 클래스 사용 범위 내에서만 접근할 수 있다.
+
+### 매개변수 템플릿
+
+템플릿은 그 자체가 템플릿인 매개변수를 가질 수 있다. 템플릿 매개변수는, 표준 템플릿 라이브러리를 구현하기 위해 사용된, 최근에 추가된 템플릿 기능이다.
+
+#### 예문
+
+``` cpp
+template <template<typename T> class Thing>
+class Crab { };
+```
+
+템플릿 매개변수는 template \<typename T> class Thing이다.
+
+여기서 template \<typename T> class가 데이터형이고, Thing이 매개변수이다.
+
+> Crab\<King> legs;
+
+선언은 이렇게 할 수 있다.
+
+Crab 클래스를 정의할때는 아래와 같이 할 수  있다.
+
+``` cpp
+template <template <typename T> class Thing>
+class Crab
+{
+private:
+    Thing<int> s1;
+    Thing<double> s2;
+public:
+    Crab() { };
+    // Thing 클래스가 push(), pop() 멤버를 가지고 있다고 가정한다.
+    bool push(int a, double x) { return s1.push(a) && s2.push(x); }
+    bool pop(int & a, double & x) { return s1.pop(a) && s2.pop(x); }
+};
+
+```
+
+또한 템플릿 매개변수를 일반 매개변수와 혼합하여 사용할 수 있다.
+
+예를들면, Crab 클래스 선언은 다음과 같이 할 수 있다.
+
+``` cpp
+template <template <typename T> class Thing, typename U, typename V>
+class Crab
+{
+private:
+    Thing<U> s1;
+    Thing<V> s2;
+    ...
+};
+```
+
+이제 멤버 s1, s2에 저장되는 데이터형은 내장 데이터형이 아니라 일반 데이터형이다.
+
+이경우 선언을 다음과 같이 수정해야 한다.
+
+> Crab\<Stack, int, double> nebula; // T=Stack, U=int, V=double

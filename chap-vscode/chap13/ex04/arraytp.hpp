@@ -4,6 +4,7 @@
 #include <cstdlib>
 void twodee(void);
 void tempmemb(void);
+void frnd2tmp(void);
 
 template <typename T, int n>
 class ArrayTP

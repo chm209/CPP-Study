@@ -5,6 +5,8 @@
 void twodee(void);
 void tempmemb(void);
 void frnd2tmp(void);
+void tmp2tmp(void);
+void manyfrnd(void);
 
 template <typename T, int n>
 class ArrayTP

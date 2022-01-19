@@ -18,6 +18,8 @@ public:
     Pair(const T1 & y, const T2 & n) : year(y), num(n) { }
 };
 
+// Pair 코드 동일
+
 class Wine : private std::string, private Pair <std::valarray<int>, std::valarray<int> >
 {
 private:
@@ -32,6 +34,13 @@ public:
     int sum() const { return PairArray::second().sum(); }
     void Show() const;
 };
+
+/*
+* 컨테인먼트 대신 private 상속을 사용해야 하기 때문에 상속으로 변경
+* string 또한 상속으로 사용
+* private Pair <std::valarray<int>, std::valarray<int> > 를 상속받는 이유는
+* typedef Pair<ArrayInt, ArrayInt> PairArray; 를 사용하기 위해서임
+*/
 
 Wine::Wine(const char* l, int y) : std::string(l), n_year(y)
 {
@@ -53,7 +62,9 @@ void Wine::GetBottles()
 		std::cout << "수량을 입력하시오: ";
 		std::cin >> n[i];
 	}
-	(PairArray &)*this = Pair<ArrayInt,ArrayInt>(y, n);
+	 (PairArray &)*this = Pair<ArrayInt,ArrayInt>(y, n);
+	// 그냥 보면 복잡해보여서 현기증이 나지만 해석하면 별거없음
+	// Pair 객체의 주소를 불러와서 값에다가 대입하라는뜻
 }
 
 void Wine::Show() const

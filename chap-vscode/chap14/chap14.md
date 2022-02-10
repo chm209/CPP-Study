@@ -102,3 +102,39 @@ inline bool Remote::volup(Tv & t) { return t.volup; }
 > 티비 (원형만) - 리모트 (그대로) - inline 티비 메서드
 
 ```공유 프렌드```
+
+하나의 함수가 서로 다른 두 클래스에 있는 private 데이터에 접근해야 할 때 그 함수는 각 클래스의 멤버 함수여야 한다.
+
+그러나 그것은 불가능하다. 그 함수가 한 클래스의 멤버라면 다른 클래스에 대해서는 프렌드일 수 있다. 때로는 두 클래스 모두에 대해 프렌드로 만드는것이 합리적인 경우가 있다.
+
+```cpp
+class Analyzer; // 사전 선언
+class Probe
+{
+    friend void sync(Analyzer & a, const Probe & p);
+    friend void sync(Probe & p, const Analyzer & a);
+    ...
+};
+
+class Analyzer
+{
+    friend void sync(Analyzer & a, const Probe & p);
+    friend void sync(Probe & p, const Analyzer & a);
+    ...
+};
+
+inline void sync(Analyzer & a, const Probe & p)
+{
+    ...
+}
+
+inline void sync(Probe & p, const Analyzer & a);
+{
+    ...
+}
+```
+
+### 내포 클래스
+
+1. C++에서는 클래스 선언을 다른 클래스 안에 내포시킬 수 있다.
+2. 이것은 새로운 데이터형에 클래스 사용 범위를 제공함으로써 이름이 난잡해지는 것을 막는다.

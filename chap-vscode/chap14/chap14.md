@@ -244,3 +244,9 @@ void super()
 ```
 
 여기서 p는 oops 자체가 이니라 oops의 복사본을 참조한다. 이는 바람직하다, 왜냐하면 super()가 종료된 후에 oops는 더이상 존재하지 않기 때문이다.
+
+#### exception 클래스
+
+1. 사용자가 작성하는 코드는 exception 객체를 발생시키거나, exception 클래스를 정의한다.
+2. C++ 라이브러리는 exception에 기초를 두고 있는 많은 예외 데이터형들을 정의한다.
+3. exception 헤더 파일은 bad_exception을 제공하며, unexpected() 함수에 의해 사용된다.

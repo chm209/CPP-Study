@@ -250,3 +250,14 @@ void super()
 1. 사용자가 작성하는 코드는 exception 객체를 발생시키거나, exception 클래스를 정의한다.
 2. C++ 라이브러리는 exception에 기초를 두고 있는 많은 예외 데이터형들을 정의한다.
 3. exception 헤더 파일은 bad_exception을 제공하며, unexpected() 함수에 의해 사용된다.
+
+#### stdexcept 예외 클래스
+
+exception public 파생 클래스 가능
+
+#### bad_alloc 예외와 new
+
+C++ 시스템들은 new를 사용할 때 일어나는 메모리 대입 문제를 해결하는 두 가지 방법을 제공한다.
+
+1. 메모리 요청을 충족시킬 수 없을 경우 new가 널 포인터를 리턴하는 것이다.
+2. new가 bad_alloc 예외를 발생시키는 것이다.
